@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación de Ecuaciones Cuadráticas</title>
+    <!-- Reveal.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos formales -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #020617; /* Slate 950 - Negro/Azul muy oscuro */
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Efecto Spotlight Formal */
+        #spotlight {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            background: radial-gradient(800px circle at 50% 50%, rgba(37, 99, 235, 0.07), transparent 40%);
+            z-index: 0;
+            transition: background 0.1s ease;
+        }
+
+        /* Texto Brillante (Shiny Text) en tonos azul y plata */
+        .shiny-text {
+            background: linear-gradient(120deg, #93c5fd 0%, #f8fafc 40%, #60a5fa 80%, #93c5fd 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Glassmorphism en las diapositivas */
+        .slide-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-sizing: border-box; 
+            width: 100%;
+            min-height: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            text-transform: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .reveal h1 { font-size: 3rem; text-align: center; }
+        .reveal h2 { font-size: 2.5rem; text-align: center; }
+        .reveal h3 { font-size: 1.8rem; }
+        .reveal p, .reveal li {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #cbd5e1; /* Slate 300 */
+            margin-bottom: 1rem;
+        }
+
+        /* Contenedor Brillante Principal (Tonos azules formales) */
+        .glow-box {
+            position: relative;
+        }
+        .glow-box::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6, #1e40af);
+            z-index: -1;
+            border-radius: 1.6rem;
+            filter: blur(12px);
+            opacity: 0.35;
+            animation: pulse-glow 3s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from { opacity: 0.2; filter: blur(10px); }
+            to { opacity: 0.5; filter: blur(20px); }
+        }
+
+        /* Cajas de Procedimiento */
+        .procedure-box {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .procedure-box:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Caja de Respuesta Formal */
+        .answer-box {
+            background: rgba(30, 58, 138, 0.2); /* Azul oscuro transparente */
+            border-left: 4px solid #3b82f6; /* Borde azul brillante */
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+            color: #f8fafc !important;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.15);
+        }
+
+        .fa-icon {
+            font-size: 1.1em;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+            color: #60a5fa; /* Azul claro formal */
+        }
+        
+        .answer-icon {
+            color: #3b82f6;
+            margin-right: 0.5rem;
+        }
+
+        /* Ajustes de MathJax */
+        .MathJax {
+            font-size: 1.1em !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Efecto Spotlight de Fondo -->
+    <div id="spotlight"></div>
+
+    <div class="reveal">
+        <div class="slides">
+            <!-- TITULO PRINCIPAL -->
+            <section class="glow-box">
+                <h1 class="shiny-text" style="font-size: 3.5rem; margin-bottom: 0;">Aplicación de Ecuaciones Cuadráticas</h1>
+                <p class="text-xl mt-4 text-slate-300 text-center">Guía de Enseñanza y Resolución Paso a Paso</p>
+                <div class="mt-8 text-center">
+                    <i class="fa-solid fa-book-open fa-icon"></i>
+                    <span class="text-sm font-semibold text-blue-400 uppercase tracking-widest">Guía Académica</span>
+                </div>
+            </section>
+
+            <!-- GUIA DE ENSEÑANZA 1 -->
+            <section>
+                <h2 class="shiny-text"><i class="fa-solid fa-chalkboard-user fa-icon"></i> Guía de Enseñanza</h2>
+                <p class="text-center mb-6">Método de 4 pasos para guiar a los estudiantes:</p>
+                <div class="procedure-box">
+                    <h3 class="text-blue-400 text-xl font-bold">1. Identificar al protagonista</h3>
+                    <p class="text-lg m-0">Pregúntales de quién habla el problema (\(x\)). Relaciona otras cantidades con \(x\) (ej. si es 3 años mayor, \(x+3\)).</p>
+                </div>
+                <div class="procedure-box">
+                    <h3 class="text-blue-400 text-xl font-bold">2. Traducir el texto</h3>
+                    <ul class="text-lg ml-6 list-disc m-0">
+                        <li><strong>Cuadrado:</strong> Potencia dos (\(x^2\)).</li>
+                        <li><strong>Producto/Área:</strong> Multiplicar.</li>
+                        <li><strong>Diferencia/Excede:</strong> Sumar o restar.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- GUIA DE ENSEÑANZA 2 -->
+            <section>
+                <h2 class="shiny-text"><i class="fa-solid fa-chalkboard-user fa-icon"></i> Guía de Enseñanza (Cont.)</h2>
+                <div class="procedure-box mt-8">
+                    <h3 class="text-blue-400 text-xl font-bold">3. Llegar a la forma base</h3>
+                    <p class="text-lg m-0">Ordenar todo en la forma \(Ax^2 + Bx + C = 0\). Todo de un lado igualado a cero.</p>
+                </div>
+                <div class="procedure-box">
+                    <h3 class="text-blue-400 text-xl font-bold">4. Resolver y elegir</h3>
+                    <p class="text-lg m-0">Usar factorización o fórmula cuadrática. Recuérdales que en problemas reales casi siempre se descarta la respuesta negativa.</p>
+                </div>
+            </section>
+
+            <!-- SERIE 1 -->
+            <section>
+                <section class="glow-box">
+                    <h1 class="shiny-text">Serie 1</h1>
+                    <h3 class="text-slate-300 text-center">Calcular Coeficientes</h3>
+                    <p class="mt-4 text-center"><i class="fa-solid fa-calculator fa-icon"></i> A partir de raíces dadas</p>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 1 y 2</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <p><strong>1. Datos:</strong> \(x_1=3\), \(x_2=4\)</p>
+                            <div class="procedure-box text-base">
+                                \((x-3)(x-4)=0\)<br>
+                                \(x^2 - 4x - 3x + 12 = 0 \)<br>
+                                \(x^2 - 7x + 12 = 0\)
+                            </div>
+                            <div class="answer-box py-2"><i class="fa-solid fa-check answer-icon"></i> \(A=1, B=-7, C=12\)</div>
+                        </div>
+                        <div>
+                            <p><strong>2. Datos:</strong> \(x_1=4\), \(x_2=5\)</p>
+                            <div class="procedure-box text-base">
+                                \((x-4)(x-5)=0\)<br>
+                                \(x^2 - 9x + 20 = 0\)
+                            </div>
+                            <div class="answer-box py-2 mt-10"><i class="fa-solid fa-check answer-icon"></i> \(A=1, B=-9, C=20\)</div>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 3 y 4</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <p><strong>3. Datos:</strong> \(x_1=-3\), \(x_2=2/5\)</p>
+                            <div class="procedure-box text-base">
+                                \((x+3)(x-\frac{2}{5})=0\)<br>
+                                \((x+3)(5x-2)=0\)<br>
+                                \(5x^2 + 13x - 6 = 0\)
+                            </div>
+                            <div class="answer-box py-2"><i class="fa-solid fa-check answer-icon"></i> \(A=5, B=13, C=-6\)</div>
+                        </div>
+                        <div>
+                            <p><strong>4. Datos:</strong> \(x_1=-3\), \(x_2=-3/4\)</p>
+                            <div class="procedure-box text-base">
+                                \((x+3)(x+\frac{3}{4})=0\)<br>
+                                \((x+3)(4x+3)=0\)<br>
+                                \(4x^2 + 15x + 9 = 0\)
+                            </div>
+                            <div class="answer-box py-2"><i class="fa-solid fa-check answer-icon"></i> \(A=4, B=15, C=9\)</div>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 5</h3>
+                    <p><strong>Datos:</strong> \(x_1=9\), \(x_2=-2\)</p>
+                    <div class="procedure-box text-lg">
+                        <strong>Procedimiento:</strong><br>
+                        Factores: \((x-9)(x+2)=0\)<br>
+                        Desarrollar: \(x^2 + 2x - 9x - 18 = 0 \rightarrow x^2 - 7x - 18 = 0\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Respuestas: \(A=1\), \(B=-7\), \(C=-18\)
+                    </div>
+                </section>
+            </section>
+
+            <!-- SERIE 2 -->
+            <section>
+                <section class="glow-box">
+                    <h1 class="shiny-text">Serie 2</h1>
+                    <h3 class="text-slate-300 text-center">Problemas sobre Números</h3>
+                    <p class="mt-4 text-center"><i class="fa-solid fa-brain fa-icon"></i> Traduciendo palabras a ecuaciones</p>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 6</h3>
+                    <p class="text-lg">La suma de un número natural y su cuadrado es 90. Hallar el número.</p>
+                    <div class="procedure-box text-lg">
+                        \(x + x^2 = 90 \rightarrow x^2 + x - 90 = 0\)<br>
+                        Factorizando: \((x+10)(x-9) = 0\)<br>
+                        Opciones: \(x=-10\) o \(x=9\). Usamos el positivo.
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Número = 9
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 7</h3>
+                    <p class="text-lg">Dos números positivos que se diferencian en 6, y su producto es 216.</p>
+                    <div class="procedure-box text-lg">
+                        Números: \(x\) y \(x+6\)<br>
+                        \(x(x+6) = 216 \rightarrow x^2 + 6x - 216 = 0\)<br>
+                        Factorizando: \((x+18)(x-12) = 0\)<br>
+                        Raíz positiva: \(x=12\). El otro es \(12+6=18\).
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Mayor = 18 | Menor = 12
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 8</h3>
+                    <p class="text-lg">Dos números positivos, diferencia 7, suma de sus cuadrados 289.</p>
+                    <div class="procedure-box text-base">
+                        Números: \(x\) y \(x+7\)<br>
+                        \(x^2 + (x+7)^2 = 289 \rightarrow 2x^2 + 14x - 240 = 0\)<br>
+                        Dividiendo entre 2: \(x^2 + 7x - 120 = 0\)<br>
+                        Factorizando: \((x+15)(x-8) = 0 \rightarrow x=8\)<br>
+                        El mayor será \(8+7 = 15\).
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Mayor = 15 | Menor = 8
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 9</h3>
+                    <p class="text-lg">Dos enteros que sumen 42 y cuyo producto sea 405.</p>
+                    <div class="procedure-box text-lg">
+                        Números: \(x\) y \(42-x\)<br>
+                        \(x(42-x) = 405 \rightarrow x^2 - 42x + 405 = 0\)<br>
+                        Factorizando: \((x-15)(x-27)=0\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Mayor = 27 | Menor = 15
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 10</h3>
+                    <p class="text-lg">Tres números consecutivos impares, cuya suma de cuadrados sea 83.</p>
+                    <div class="procedure-box text-base">
+                        Números: \(x\), \(x+2\), \(x+4\)<br>
+                        \(x^2 + (x+2)^2 + (x+4)^2 = 83 \rightarrow 3x^2 + 12x - 63 = 0\)<br>
+                        Dividimos entre 3: \(x^2 + 4x - 21 = 0\)<br>
+                        Factorizando: \((x+7)(x-3)=0 \rightarrow x=3\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Mayor = 7 | Medio = 5 | Menor = 3
+                    </div>
+                </section>
+            </section>
+
+            <!-- SERIE 3 -->
+            <section>
+                <section class="glow-box">
+                    <h1 class="shiny-text">Serie 3</h1>
+                    <h3 class="text-slate-300 text-center">Problemas sobre Edades</h3>
+                    <p class="mt-4 text-center"><i class="fa-solid fa-clock-rotate-left fa-icon"></i> El tiempo y las matemáticas</p>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 11</h3>
+                    <p class="text-lg">Alejandro tiene 3 años más que Braulio. Suma de cuadrados es 317.</p>
+                    <div class="procedure-box text-base">
+                        Braulio = \(x\), Alejandro = \(x+3\)<br>
+                        \((x+3)^2 + x^2 = 317 \rightarrow 2x^2 + 6x - 308 = 0\)<br>
+                        Dividimos entre 2: \(x^2 + 3x - 154 = 0\)<br>
+                        Factorizando: \((x+14)(x-11)=0 \rightarrow x=11\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Alejandro = 14 años | Braulio = 11 años
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 12</h3>
+                    <p class="text-lg">Suma de edades de Andrés y Sofía es 23. Su producto es 102.</p>
+                    <div class="procedure-box text-lg">
+                        Edades: \(x\) y \(23-x\)<br>
+                        \(x(23-x) = 102 \rightarrow x^2 - 23x + 102 = 0\)<br>
+                        Factorizando: \((x-17)(x-6)=0\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Andrés = 17 años | Sofía = 6 años
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 13</h3>
+                    <p class="text-lg">Edad de Carlos hace 6 años era raíz cuadrada de su edad dentro de 6 años.</p>
+                    <div class="procedure-box text-base">
+                        Actual = \(x\), Pasado = \(x-6\), Futuro = \(x+6\)<br>
+                        \(x-6 = \sqrt{x+6} \rightarrow (x-6)^2 = x+6\)<br>
+                        \(x^2 - 13x + 30 = 0 \rightarrow (x-10)(x-3)=0\)<br>
+                        \(x=3\) daría pasado negativo, tomamos \(x=10\).
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Carlos = 10 años
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 14</h3>
+                    <p class="text-lg">Alejandro tiene 4 años más que Alfredo. Suma de cuadrados = 80.</p>
+                    <div class="procedure-box text-base">
+                        Alfredo = \(x\), Alejandro = \(x+4\)<br>
+                        \((x+4)^2 + x^2 = 80 \rightarrow 2x^2 + 8x - 64 = 0\)<br>
+                        Dividimos entre 2: \(x^2 + 4x - 32 = 0\)<br>
+                        Factorizando: \((x+8)(x-4)=0 \rightarrow x=4\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Alejandro = 8 años | Alfredo = 4 años
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 15</h3>
+                    <p class="text-lg">Edad de Ricardo es 13/2 de su hijo. Próximo año: edad será cuadrado de la del hijo menos 9.</p>
+                    <div class="procedure-box text-base">
+                        Hijo hoy = \(x\), Ricardo hoy = \(\frac{13}{2}x\)<br>
+                        Próximo año: \(\frac{13}{2}x + 1 = (x+1)^2 - 9\)<br>
+                        \(13x = 2(x^2 + 2x - 8) \rightarrow 2x^2 - 9x - 18 = 0\)<br>
+                        Factorizando: \((2x+3)(x-6)=0 \rightarrow x=6\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Edad de Ricardo = 39 años
+                    </div>
+                </section>
+            </section>
+
+            <!-- SERIE 4 -->
+            <section>
+                <section class="glow-box">
+                    <h1 class="shiny-text">Serie 4</h1>
+                    <h3 class="text-slate-300 text-center">Problemas sobre Costos</h3>
+                    <p class="mt-4 text-center"><i class="fa-solid fa-coins fa-icon"></i> Dinero, compras y proporciones</p>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 16</h3>
+                    <p class="text-lg">Compra libros por Q1,800. Si compra 6 menos, cada uno cuesta Q10 más.</p>
+                    <div class="procedure-box text-base">
+                        Libros = \(x\), Precio = \(\frac{1800}{x}\)<br>
+                        \((x-6)(\frac{1800}{x} + 10) = 1800\)<br>
+                        \(x^2 - 6x - 1080 = 0 \rightarrow (x-36)(x+30) = 0\)<br>
+                        \(x=36\). Precio = \(1800/36 = 50\).
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Compró = 36 libros | Precio = Q50
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 17</h3>
+                    <p class="text-lg">Compran bicicleta por Q1,200. El pago excede en 194 el número de personas.</p>
+                    <div class="procedure-box text-base">
+                        Personas = \(x\), Pago = \(x + 194\)<br>
+                        \(x(x + 194) = 1200 \rightarrow x^2 + 194x - 1200 = 0\)<br>
+                        Factorizando: \((x+200)(x-6) = 0 \rightarrow x=6\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Cantidad de personas = 6
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 18</h3>
+                    <p class="text-lg">Libretas por Q1,500. Si costaran Q10 más, adquirirían 5 menos.</p>
+                    <div class="procedure-box text-base">
+                        Libretas = \(x\), Costo = \(\frac{1500}{x}\)<br>
+                        \((x-5)(\frac{1500}{x} + 10) = 1500\)<br>
+                        \(x^2 - 5x - 750 = 0 \rightarrow (x-30)(x+25) = 0\)<br>
+                        \(x=30\). Precio = \(1500/30 = 50\).
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Compraron = 30 libretas | Precio = Q50
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 19</h3>
+                    <p class="text-lg">Excursión Q9,000. Si desisten 3, el resto paga Q100 más.</p>
+                    <div class="procedure-box text-base">
+                        Personas = \(x\), Pago = \(\frac{9000}{x}\)<br>
+                        \((x-3)(\frac{9000}{x} + 100) = 9000\)<br>
+                        \(x^2 - 3x - 270 = 0 \rightarrow (x-18)(x+15)=0 \)<br>
+                        \(x=18\). Pago = \(9000/18 = 500\).
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Personas = 18 | Pago = Q500
+                    </div>
+                </section>
+            </section>
+
+            <!-- SERIE 5 -->
+            <section>
+                <section class="glow-box">
+                    <h1 class="shiny-text">Serie 5</h1>
+                    <h3 class="text-slate-300 text-center">Problemas sobre Geometría</h3>
+                    <p class="mt-4 text-center"><i class="fa-solid fa-ruler-combined fa-icon"></i> Áreas, perímetros y figuras</p>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 20</h3>
+                    <p class="text-lg">Si duplicamos el lado de un cuadrado, su área aumenta en 243 m².</p>
+                    <div class="procedure-box text-base">
+                        Área = \(x^2\), Nueva área = \((2x)^2 = 4x^2\)<br>
+                        \(4x^2 = x^2 + 243 \rightarrow 3x^2 = 243\)<br>
+                        \(x^2 = 81 \rightarrow x = 9\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Lado original = 9 m
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 21</h3>
+                    <p class="text-lg">Aumenta lado de cuadrado 4 cm, área aumenta 64 cm².</p>
+                    <div class="procedure-box text-base">
+                        Área = \(x^2\), Nueva = \((x+4)^2\)<br>
+                        \((x+4)^2 = x^2 + 64 \rightarrow x^2 + 8x + 16 = x^2 + 64\)<br>
+                        \(8x = 48 \rightarrow x = 6\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Lado original = 6 cm
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 22</h3>
+                    <p class="text-lg">Futbol: 20 m más de largo que ancho, área = 1,500 m².</p>
+                    <div class="procedure-box text-base">
+                        Ancho = \(x\), Largo = \(x+20\)<br>
+                        \(x(x+20) = 1500 \rightarrow x^2 + 20x - 1500 = 0\)<br>
+                        Factorizando: \((x+50)(x-30)=0 \rightarrow x=30\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Largo = 50 m | Ancho = 30 m
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 23</h3>
+                    <p class="text-lg">Rectángulo: diagonal 15 cm, base 3 cm más que altura.</p>
+                    <div class="procedure-box text-base">
+                        Altura = \(x\), Base = \(x+3\)<br>
+                        Pitágoras: \(x^2 + (x+3)^2 = 15^2\)<br>
+                        \(2x^2 + 6x - 216 = 0 \rightarrow x^2 + 3x - 108 = 0\)<br>
+                        Factorizando: \((x+12)(x-9)=0 \rightarrow x=9\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Base = 12 cm | Altura = 9 cm
+                    </div>
+                </section>
+                <section>
+                    <h3 class="text-blue-400">Ejercicio 24</h3>
+                    <p class="text-lg">Rectángulo: perímetro 80 m, área 375 m².</p>
+                    <div class="procedure-box text-base">
+                        Largo + Ancho = 40. Ancho = \(x\), Largo = \(40-x\)<br>
+                        \(x(40-x) = 375 \rightarrow x^2 - 40x + 375 = 0\)<br>
+                        Factorizando: \((x-25)(x-15)=0\)
+                    </div>
+                    <div class="answer-box">
+                        <i class="fa-solid fa-check answer-icon"></i> Largo = 25 m | Ancho = 15 m
+                    </div>
+                </section>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/math/math.min.js"></script>
+    <script>
+        // Envolver el contenido de las diapositivas para que el padding no rompa Reveal.js
+        document.querySelectorAll('.reveal .slides section').forEach(section => {
+            // Solo envolver diapositivas hoja (las que no tienen secciones hijas)
+            if (section.querySelectorAll('section').length === 0) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'slide-card';
+                
+                // Mover los hijos al wrapper
+                while (section.firstChild) {
+                    wrapper.appendChild(section.firstChild);
+                }
+                section.appendChild(wrapper);
+                
+                // Mover clase glow-box si existe
+                if (section.classList.contains('glow-box')) {
+                    section.classList.remove('glow-box');
+                    wrapper.classList.add('glow-box');
+                }
+            }
+        });
+
+        // Inicializar Reveal.js con MathJax
+        Reveal.initialize({
+            hash: true,
+            width: 1200, // Dar a\u00fan m\u00e1s ancho para las 2 columnas
+            height: 750,
+            margin: 0.05,
+            transition: 'convex', // Transición fluida formal
+            backgroundTransition: 'fade',
+            center: true,
+            plugins: [ RevealMath.MathJax3 ],
+            mathjax3: {
+                mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js',
+                tex: {
+                    inlineMath: [ [ '$', '$' ], [ '\\(', '\\)' ]  ],
+                    displayMath: [ [ '$$', '$$' ], [ '\\[', '\\]' ] ]
+                }
+            }
+        });
+
+        // Script para el efecto Spotlight interactivo
+        document.addEventListener('mousemove', (e) => {
+            const spotlight = document.getElementById('spotlight');
+            const x = e.clientX;
+            const y = e.clientY;
+            spotlight.style.background = `radial-gradient(800px circle at ${x}px ${y}px, rgba(37, 99, 235, 0.09), transparent 40%)`;
+        });
+    </script>
+</body>
+</html>
